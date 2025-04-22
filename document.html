@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{filename} - PDF Summarizer</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .document-content {
+      font-size: 1rem;
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+    .key-term {
+      background-color: #e9f5ff;
+      padding: 0 3px;
+      border-radius: 3px;
+    }
+  </style>
+</head>
+<body>
+<div class="container-fluid mt-4">
+  <div class="row mb-4">
+    <div class="col-md-10 offset-md-1">
+      <div class="d-flex justify-content-between align-items-center">
+        <h1>{filename}</h1>
+        <div>
+          <a href="/" class="btn btn-outline-secondary me-2">Home</a>
+          <a href="/history" class="btn btn-outline-primary">History</a>
+        </div>
+      </div>
+      <p class="text-muted">Uploaded on {timestamp} • {word_count} words</p>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-3 mb-4">
+      <div class="card sticky-top" style="top: 20px;">
+        <div class="card-header">
+          <h3>Key Terms</h3>
+        </div>
+        <div class="card-body">
+          <p>{summary}</p>
+
+          <hr>
+
+          <h5>Actions</h5>
+          <div class="d-grid gap-2">
+            <button class="btn btn-sm btn-success" id="highlight-terms">Highlight Key Terms</button>
+            <button class="btn btn-sm btn-danger" onclick="deleteDocument('{id}')">Delete Document</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-9">
+      <div class="card">
+        <div class="card-header">
+          <h3>Document Content</h3>
+        </div>
+        <div class="card-body">
+          <div class="document-content" id="document-content">
+            {content}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.getElementById('highlight-terms').addEventListener('click', function() {
+    const summary = "{summary}";
+    const keyTerms = summary.split(', ').map(item => {
+      const match = item.match(/^([^(]+)/);
+      return match ? match[1].trim() : null;
+    }).filter(Boolean);
+
+    const content = document.getElementById('document-content');
+    let html = content.innerHTML;
+
+    keyTerms.forEach(term => {
+      const regex = new RegExp(`\\b${term}\\b`, 'gi');
+      html = html.replace(regex, match => `<span class="key-term">${match}</span>`);
+    });
+
+    content.innerHTML = html;
+  });
+
+  function deleteDocument(id) {
+    if (confirm('Are you sure you want to delete this document?')) {
+      fetch(`/delete/${id}`, {
+        method: 'POST',
+      })
+              .then(response => response.json())
+              .then(data => {
+                if (data.success) {
+                  window.location.href = '/history';
+                } else {
+                  alert('Error: ' + data.message);
+                }
+              })
+              .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while deleting the document');
+              });
+    }
+  }
+</script>
+</body>
+</html>

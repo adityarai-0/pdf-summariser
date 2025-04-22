@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Summarizer</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .upload-area {
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            margin: 20px 0;
+            background-color: #f8f9fa;
+            transition: all 0.3s ease;
+        }
+        .upload-area:hover {
+            border-color: #0d6efd;
+            background-color: #e9ecef;
+        }
+        .feature-icon {
+            font-size: 2rem;
+            color: #0d6efd;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+<div class="container mt-5">
+    <div class="row mb-4">
+        <div class="col-md-8 offset-md-2 text-center">
+            <h1>PDF Summarizer</h1>
+            <p class="lead">Upload your PDF files and get an instant summary of key terms and concepts</p>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-body">
+                    <form action="/upload" method="post" enctype="multipart/form-data" id="upload-form">
+                        <div class="upload-area" id="drop-area">
+                            <div class="mb-3">
+                                <i class="bi bi-file-earmark-pdf feature-icon">📄</i>
+                                <h4>Drop your PDF here</h4>
+                                <p>or</p>
+                                <input type="file" class="form-control" id="file-input" name="file" accept=".pdf" required>
+                            </div>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">Summarize</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-md-8 offset-md-2 text-center">
+            <a href="/history" class="btn btn-outline-secondary">View Upload History</a>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-md-4">
+            <div class="text-center">
+                <i class="bi bi-lightning-charge feature-icon">⚡</i>
+                <h3>Fast Processing</h3>
+                <p>Get summaries of your documents in seconds</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="text-center">
+                <i class="bi bi-graph-up feature-icon">📊</i>
+                <h3>Key Term Analysis</h3>
+                <p>Identify the most important concepts in your document</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="text-center">
+                <i class="bi bi-clock-history feature-icon">🕒</i>
+                <h3>History Tracking</h3>
+                <p>Access your previously uploaded documents anytime</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const dropArea = document.getElementById('drop-area');
+    const fileInput = document.getElementById('file-input');
+
+    // Prevent default drag behaviors
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropArea.addEventListener(eventName, preventDefaults, false);
+    });
+
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+    // Highlight drop area when item is dragged over it
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropArea.addEventListener(eventName, highlight, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropArea.addEventListener(eventName, unhighlight, false);
+    });
+
+    function highlight() {
+        dropArea.style.borderColor = '#0d6efd';
+        dropArea.style.backgroundColor = '#e2e8f0';
+    }
+
+    function unhighlight() {
+        dropArea.style.borderColor = '#ccc';
+        dropArea.style.backgroundColor = '#f8f9fa';
+    }
+
+    // Handle dropped files
+    dropArea.addEventListener('drop', handleDrop, false);
+
+    function handleDrop(e) {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        fileInput.files = files;
+    }
+</script>
+</body>
+</html>
